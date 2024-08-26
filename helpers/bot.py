@@ -48,7 +48,8 @@ def location(update, context):
     try:
         lat, lng = map(float,' '.join(context.args).replace(',',' ').split())
         update.effective_message.reply_location(latitude=lat, longitude=lng)
-    else:
+    except Exception as e:
+        # logger.error(f"Error processing location command: {e} - {context.args}")
         update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
 
 def get_dispatcher(bot):
