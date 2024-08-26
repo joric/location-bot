@@ -3,10 +3,7 @@ import logging
 import telegram, os
 from telegram.ext import Dispatcher, MessageHandler, CommandHandler, Filters
 
-from uuid import uuid4
-
 import urllib3
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +19,7 @@ http = urllib3.PoolManager()
 
 def getLocationFromOSM(q):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1})
-    text = r.data.decode('utf-8')
-    data = json.loads(text)
+    data = r.json()
     if data:
         return [data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
     return None
