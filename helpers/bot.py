@@ -44,7 +44,7 @@ def location(update, context):
                 latitude, longitude = res
                 update.effective_message.reply_location(latitude=latitude, longitude=longitude)
             else:
-                update.effective_message.reply_text(q + ' not found')
+                update.effective_message.reply_text(f'Location "{q}" not found.')
         except (IndexError, ValueError) as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
             update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
