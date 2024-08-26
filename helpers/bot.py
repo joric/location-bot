@@ -20,8 +20,8 @@ Example:
 
 http = urllib3.PoolManager()
 
-def getLocationFromOSM(title):
-    r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":title, "format":"json", "limit": 1})
+def getLocationFromOSM(q):
+    r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1})
     text = r.data.decode('utf-8')
     data = json.loads(text)
     if data:
@@ -38,8 +38,13 @@ def location(update, context):
         update.effective_message.reply_location(latitude=latitude, longitude=longitude)
     except (IndexError, ValueError) as e:
         try:
-            latitude, longitude = getLocationFromOSM(' '.join(context.args))
-            update.effective_message.reply_location(latitude=latitude, longitude=longitude)
+            q = ' '.join(context.args)
+            res = getLocationFromOSM(q)
+            if res:
+                latitude, longitude = res
+                update.effective_message.reply_location(latitude=latitude, longitude=longitude)
+            else:
+                update.effective_message.reply_text(q + ' not found')
         except (IndexError, ValueError) as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
             update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
