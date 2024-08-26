@@ -25,7 +25,7 @@ def getLocationFromOSM(q):
     text = r.data.decode('utf-8')
     data = json.loads(text)
     if data:
-        return map(float, [data[0]['lat'], data[0]['lon']])
+        return [data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
     return None
 
 def echo(update, context):
@@ -41,7 +41,8 @@ def location(update, context):
             q = ' '.join(context.args)
             res = getLocationFromOSM(q)
             if res:
-                latitude, longitude = res
+                display_name, latitude, longitude = res
+                update.effective_message.reply_text(display_name)
                 update.effective_message.reply_location(latitude=latitude, longitude=longitude)
             else:
                 update.effective_message.reply_text(f'Location "{q}" not found.')
