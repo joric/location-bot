@@ -29,7 +29,6 @@ def getLocationFromOSM(q):
     return None
 
 def reply(update, context, q):
-    q = ' '.join(context.args)
     res = getLocationFromOSM(q)
     if res:
         name, lat, lng = res
