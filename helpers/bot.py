@@ -5,9 +5,8 @@ from telegram.ext import Dispatcher, MessageHandler, CommandHandler, Filters
 
 from uuid import uuid4
 
-import requests
-import urllib.parse
-
+import urllib3
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +18,15 @@ Example:
 """
     )
 
+http = urllib3.PoolManager()
+
 def getLocationFromOSM(title):
-    q = urllib.parse.quote_plus(context.args[0])
-    url = f'https://nominatim.openstreetmap.org/search?q={q}&format=json&limit=1'
-    res = requests.get(url)
-    data = json.loads(res.text)
+    r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":title, "format":"json", "limit": 1})
+    text = r.data.decode('utf-8')
+    data = json.loads(text)
     if data:
         return map(float, [data[0]['lat'], data[0]['lon']])
+    return None
 
 def echo(update, context):
     update.effective_message.reply_text(update.effective_message.text)
