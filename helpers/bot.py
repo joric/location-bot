@@ -42,7 +42,7 @@ def location(update, context):
             res = getLocationFromOSM(q)
             if res:
                 name, lat, lng = res
-                update.effective_message.reply_text(name)
+                update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
                 update.effective_message.reply_location(latitude=lat, longitude=lng)
             else:
                 update.effective_message.reply_text(f'Location "{q}" not found.')
