@@ -5,6 +5,8 @@ from telegram.ext import Dispatcher, MessageHandler, CommandHandler, Filters
 
 from uuid import uuid4
 
+logger = logging.getLogger(__name__)
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.effective_message.reply_text("""Hi! I send location.
@@ -25,7 +27,8 @@ def location(update, context):
             longitude = float(context.args[1])
 
         update.effective_message.reply_location(latitude=latitude, longitude=longitude)
-    except (IndexError, ValueError):
+    except (IndexError, ValueError) as e:
+        logger.error(f"Error processing location command: {e}")
         update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
 
 def get_dispatcher(bot):
