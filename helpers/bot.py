@@ -18,13 +18,17 @@ Example:
 
 http = urllib3.PoolManager()
 
+def getDisplayNameFromOSM(lat, lng):
+    r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"})
+    data = json.loads(r.data.decode('utf-8'))
+    if data:
+        return data['display_name']
+
 def getLocationFromOSM(q):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1})
-    text = r.data.decode('utf-8')
-    data = json.loads(text)
+    data = json.loads(r.data.decode('utf-8'))
     if data:
         return [data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
-    return None
 
 def reply(update, context, q):
     if not q:
@@ -32,6 +36,8 @@ def reply(update, context, q):
     else:
         try:
             lat, lng = map(float,q.replace(',',' ').split())
+            name = getDisplayNameFromOSM(lat, lng)
+            update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
             update.effective_message.reply_location(latitude=lat, longitude=lng)
         except Exception as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
