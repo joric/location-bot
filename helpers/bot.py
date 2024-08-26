@@ -32,23 +32,22 @@ def echo(update, context):
     update.effective_message.reply_text(update.effective_message.text)
 
 def location(update, context):
-    try:
-        latitude = float(context.args[0].rstrip(','))
-        longitude = float(context.args[1])
-        update.effective_message.reply_location(latitude=latitude, longitude=longitude)
-    except (IndexError, ValueError) as e:
+    q = ' '.join(context.args)
+    if q:
         try:
-            q = ' '.join(context.args)
+            lat, lng = map(float, q.replace(',',' ').split())
+            update.effective_message.reply_location(latitude=lat, longitude=lng)
+        except Exception as e:
+            # logger.error(f"Error processing location command: {e} - {context.args}")
             res = getLocationFromOSM(q)
             if res:
-                display_name, latitude, longitude = res
-                update.effective_message.reply_text(display_name)
-                update.effective_message.reply_location(latitude=latitude, longitude=longitude)
+                name, lat, lng = res
+                update.effective_message.reply_text(name)
+                update.effective_message.reply_location(latitude=lat, longitude=lng)
             else:
                 update.effective_message.reply_text(f'Location "{q}" not found.')
-        except (IndexError, ValueError) as e:
-            # logger.error(f"Error processing location command: {e} - {context.args}")
-            update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
+    else:
+        update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
 
 def get_dispatcher(bot):
     """Create and return dispatcher instances"""
