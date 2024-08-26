@@ -28,24 +28,26 @@ def getLocationFromOSM(q):
         return [data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
     return None
 
+def reply(update, context, q):
+    q = ' '.join(context.args)
+    res = getLocationFromOSM(q)
+    if res:
+        name, lat, lng = res
+        update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
+        update.effective_message.reply_location(latitude=lat, longitude=lng)
+    else:
+        update.effective_message.reply_text(f'"{q}" not found.')
+
 def echo(update, context):
-    update.effective_message.reply_text(update.effective_message.text)
+    reply(update, context, update.effective_message.text)
+
+def search(update, context):
+    reply(update, context, ' '.join(context.args))
 
 def location(update, context):
-    q = ' '.join(context.args)
-    if q:
-        try:
-            lat, lng = map(float, q.replace(',',' ').split())
-            update.effective_message.reply_location(latitude=lat, longitude=lng)
-        except Exception as e:
-            # logger.error(f"Error processing location command: {e} - {context.args}")
-            res = getLocationFromOSM(q)
-            if res:
-                name, lat, lng = res
-                update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
-                update.effective_message.reply_location(latitude=lat, longitude=lng)
-            else:
-                update.effective_message.reply_text(f'Location "{q}" not found.')
+    try:
+        lat, lng = map(float,' '.join(context.args).replace(',',' ').split())
+        update.effective_message.reply_location(latitude=lat, longitude=lng)
     else:
         update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
 
@@ -55,5 +57,6 @@ def get_dispatcher(bot):
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("location", location))
+    dispatcher.add_handler(CommandHandler("search", search))
     dispatcher.add_handler(MessageHandler((Filters.text | Filters.update) & ~Filters.command, echo))
     return dispatcher
