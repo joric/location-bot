@@ -28,7 +28,7 @@ def location(update, context):
 
         update.effective_message.reply_location(latitude=latitude, longitude=longitude)
     except (IndexError, ValueError) as e:
-        logger.error(f"Error processing location command: {e}")
+        logger.error(f"Error processing location command: {e} - {context.args}")
         update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
 
 def get_dispatcher(bot):
