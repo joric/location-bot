@@ -29,13 +29,21 @@ def getLocationFromOSM(q):
     return None
 
 def reply(update, context, q):
-    res = getLocationFromOSM(q)
-    if res:
-        name, lat, lng = res
-        update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
-        update.effective_message.reply_location(latitude=lat, longitude=lng)
+    if not q:
+        update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
     else:
-        update.effective_message.reply_text(f'"{q}" not found.')
+        try:
+            lat, lng = map(float,q.replace(',',' ').split())
+            update.effective_message.reply_location(latitude=lat, longitude=lng)
+        except Exception as e:
+            # logger.error(f"Error processing location command: {e} - {context.args}")
+            res = getLocationFromOSM(q)
+            if res:
+                name, lat, lng = res
+                update.effective_message.reply_text(f'{name}, [{lat}, {lng}]')
+                update.effective_message.reply_location(latitude=lat, longitude=lng)
+            else:
+                update.effective_message.reply_text(f'"{q}" not found.')
 
 def echo(update, context):
     reply(update, context, update.effective_message.text)
@@ -44,12 +52,7 @@ def search(update, context):
     reply(update, context, ' '.join(context.args))
 
 def location(update, context):
-    try:
-        lat, lng = map(float,' '.join(context.args).replace(',',' ').split())
-        update.effective_message.reply_location(latitude=lat, longitude=lng)
-    except Exception as e:
-        # logger.error(f"Error processing location command: {e} - {context.args}")
-        update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
+    reply(update, context, ' '.join(context.args))
 
 def get_dispatcher(bot):
     """Create and return dispatcher instances"""
