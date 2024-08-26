@@ -59,6 +59,7 @@ def get_dispatcher(bot):
     dispatcher = Dispatcher(bot, None, workers=0)
 
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", start))
     dispatcher.add_handler(CommandHandler("location", location))
     dispatcher.add_handler(CommandHandler("search", search))
     dispatcher.add_handler(MessageHandler((Filters.text | Filters.update) & ~Filters.command, echo))
