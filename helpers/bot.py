@@ -18,8 +18,12 @@ def echo(update, context):
 
 def location(update, context):
     try:
-        latitude = float(context.args[0])
-        longitude = float(context.args[1])
+        if ',' in context.args[0]:
+            latitude, longitude = map(float, context.args[0].split(','))
+        else:
+            latitude = float(context.args[0])
+            longitude = float(context.args[1])
+
         update.effective_message.reply_location(latitude=latitude, longitude=longitude)
     except (IndexError, ValueError):
         update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
