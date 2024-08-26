@@ -20,12 +20,8 @@ def echo(update, context):
 
 def location(update, context):
     try:
-        if ',' in context.args[0]:
-            latitude, longitude = map(float, context.args[0].split(','))
-        else:
-            latitude = float(context.args[0])
-            longitude = float(context.args[1])
-
+        latitude = float(context.args[0].rstrip(','))
+        longitude = float(context.args[1])
         update.effective_message.reply_location(latitude=latitude, longitude=longitude)
     except (IndexError, ValueError) as e:
         logger.error(f"Error processing location command: {e} - {context.args}")
