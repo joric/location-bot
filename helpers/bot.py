@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 def help(update, context):
     """Send a message when the command /start is issued."""
-    update.effective_message.reply_text("""Hi! I send location.
-Example: 40.714627 -74.002863
+    update.effective_message.reply_text("""Hi! I search and send location.
+Example: "40.714627 -74.002863" or "new york".
 """
     )
 
