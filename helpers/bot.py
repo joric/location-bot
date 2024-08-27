@@ -8,7 +8,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
-def start(update, context):
+def help(update, context):
     """Send a message when the command /start is issued."""
     update.effective_message.reply_text("""Hi! I search location.
 Example: "40.714627 -74.002863" or "new york".
@@ -31,7 +31,7 @@ def getLocationFromOSM(q):
 
 def reply(update, context, q):
     if not q:
-        update.effective_message.reply_text('Usage: /location <latitude> <longitude>')
+        help(update, context)
     else:
         try:
             lat, lng = map(float,q.replace(',',' ').split())
@@ -54,7 +54,7 @@ def get_dispatcher(bot):
     """Create and return dispatcher instances"""
     dispatcher = Dispatcher(bot, None, workers=0)
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", start))
+    dispatcher.add_handler(CommandHandler("start", help))
+    dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(MessageHandler((Filters.text | Filters.update) & ~Filters.command, echo))
     return dispatcher
