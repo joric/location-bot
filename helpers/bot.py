@@ -22,13 +22,13 @@ def getDisplayNameFromOSM(lat, lng):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"})
     data = json.loads(r.data.decode('utf-8'))
     if 'display_name' in data:
-        return data['display_name']
+        return data['name'], data['display_name']
 
 def getLocationFromOSM(q):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1})
     data = json.loads(r.data.decode('utf-8'))
     if data:
-        return [data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
+        return [data[0]['name'], data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
 
 def reply(update, context, q):
     if not q:
@@ -36,16 +36,16 @@ def reply(update, context, q):
     else:
         try:
             lat, lng = map(float,q.replace(',',' ').split())
-            name = getDisplayNameFromOSM(lat, lng) or 'Unknown location'
-            update.effective_message.reply_text(f'{name} [{lat}, {lng}]')
-            update.effective_message.reply_location(latitude=lat, longitude=lng)
+            name, display_name = getDisplayNameFromOSM(lat, lng) or 'Unknown location'
+            address = f'{display_name} [{lat}, {lng}]'
+            update.effective_message.reply_venue(latitude=lat, longitude=lng, title=name, address=address)
         except Exception as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
             res = getLocationFromOSM(q)
             if res:
-                name, lat, lng = res
-                update.effective_message.reply_text(f'{name} [{lat}, {lng}]')
-                update.effective_message.reply_location(latitude=lat, longitude=lng)
+                name, display_name, lat, lng = res
+                address = f'{display_name} [{lat}, {lng}]'
+                update.effective_message.reply_venue(latitude=lat, longitude=lng, title=name, address=address)
             else:
                 update.effective_message.reply_text(f'"{q}" not found.')
 
