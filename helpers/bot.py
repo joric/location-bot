@@ -38,7 +38,7 @@ def reply(update, context, q):
             lat, lng = map(float,q.replace(',',' ').split())
             name, display_name = getDisplayNameFromOSM(lat, lng) or ['Unknown','Unknown Location']
             if lat==0 and lng==0:
-                lat, lng = [0.00000001, 0.00000001] # Either venue or latitude, longitude, address and title must be passed as arguments
+                lat, lng = [0.001, 0.001] # Either venue or latitude, longitude, address and title must be passed as arguments
             update.effective_message.reply_venue(latitude=lat, longitude=lng, title=f'{lat}, {lng}', address=display_name)
         except Exception as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
