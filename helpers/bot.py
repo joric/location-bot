@@ -37,14 +37,14 @@ def reply(update, context, q):
         try:
             lat, lng = map(float,q.replace(',',' ').split())
             name = getDisplayNameFromOSM(lat, lng) or 'Unknown location'
-            update.effective_message.reply_text(f'{name}\n[{lat}, {lng}]')
+            update.effective_message.reply_text(f'{name} [{lat}, {lng}]')
             update.effective_message.reply_location(latitude=lat, longitude=lng)
         except Exception as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
             res = getLocationFromOSM(q)
             if res:
                 name, lat, lng = res
-                update.effective_message.reply_text(f'{name}\n[{lat}, {lng}]')
+                update.effective_message.reply_text(f'{name} [{lat}, {lng}]')
                 update.effective_message.reply_location(latitude=lat, longitude=lng)
             else:
                 update.effective_message.reply_text(f'"{q}" not found.')
