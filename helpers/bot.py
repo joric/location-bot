@@ -39,7 +39,7 @@ def reply(update, context, q):
             name, display_name = getDisplayNameFromOSM(lat, lng) or ['Unknown','Unknown Location']
             update.effective_message.reply_venue(latitude=lat, longitude=lng, title=f'{lat}, {lng}', address=display_name)
         except Exception as e:
-            # logger.error(f"Error processing location command: {e} - {context.args}")
+            logger.error(f"Error processing location command: {e} - {context.args}")
             res = getLocationFromOSM(q)
             if res:
                 name, display_name, lat, lng = res
