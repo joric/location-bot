@@ -21,7 +21,7 @@ http = urllib3.PoolManager()
 def getDisplayNameFromOSM(lat, lng):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"})
     data = json.loads(r.data.decode('utf-8'))
-    if 'display_name' in data:
+    if 'name' in data and 'display_name' in data:
         return data['name'], data['display_name']
 
 def getLocationFromOSM(q):
@@ -36,7 +36,7 @@ def reply(update, context, q):
     else:
         try:
             lat, lng = map(float,q.replace(',',' ').split())
-            name, display_name = getDisplayNameFromOSM(lat, lng) or 'Unknown location'
+            name, display_name = getDisplayNameFromOSM(lat, lng) or ['Unknown','Unknown Location']
             update.effective_message.reply_venue(latitude=lat, longitude=lng, title=f'{lat}, {lng}', address=display_name)
         except Exception as e:
             # logger.error(f"Error processing location command: {e} - {context.args}")
