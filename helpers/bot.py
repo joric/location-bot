@@ -8,11 +8,10 @@ import json
 
 logger = logging.getLogger(__name__)
 
-def start(update, context):
+def help(update, context):
     """Send a message when the command /start is issued."""
     update.effective_message.reply_text("""Hi! I send location.
-Example:
-/location 40.714627 -74.002863
+Example: 40.714627 -74.002863
 """
     )
 
@@ -51,19 +50,10 @@ def reply(update, context, q):
 def echo(update, context):
     reply(update, context, update.effective_message.text)
 
-def search(update, context):
-    reply(update, context, ' '.join(context.args))
-
-def location(update, context):
-    reply(update, context, ' '.join(context.args))
-
 def get_dispatcher(bot):
     """Create and return dispatcher instances"""
     dispatcher = Dispatcher(bot, None, workers=0)
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", start))
-    dispatcher.add_handler(CommandHandler("location", location))
-    dispatcher.add_handler(CommandHandler("search", search))
+    dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(MessageHandler((Filters.text | Filters.update) & ~Filters.command, echo))
     return dispatcher
