@@ -3,3 +3,4 @@ Werkzeug==2.3.7
 python-telegram-bot==13.4
 urllib3==1.26.18
 six==1.16.0
+setuptools==69.5.1
