@@ -30,10 +30,13 @@ def parse_coords(q):
         s = f"{x:.6f}".rstrip('0').rstrip('.')
         return s if s else '0'
 
-    q = q.strip().upper()
+    q = q.strip().upper().replace(',', ' ')
 
     if '°' in q:
-        coords = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*\'?\s*(\d*(?:\.\d+)?)?\s*"?\s*([NSEW])?', q)
+        coords = re.findall(
+            r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*\'?\s*(\d*(?:\.\d+)?)?\s*"?\s*([NSEW])?',
+            q
+        )
 
         if len(coords) >= 2:
             d1, m1, s1, a1 = coords[0]
