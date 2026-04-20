@@ -29,19 +29,14 @@ def parse_coords(q):
     q = q.strip().upper()
 
     if '°' in q:
-        parts = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*(\d*(?:\.\d+)?)?\s*([NSEW])?', q)
+        coords = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*\'?\s*(\d*(?:\.\d+)?)?\s*"?\s*([NSEW])?', q)
 
-        if len(parts) >= 2:
-            d1,m1,s1,a1 = parts[0]
-            d2,m2,s2,a2 = parts[1]
+        if len(coords) >= 2:
+            d1,m1,s1,a1 = coords[0]
+            d2,m2,s2,a2 = coords[1]
 
-            def sign(a, neg):
-                if not a:
-                    return 1
-                return -1 if a in neg else 1
-
-            lat = dms(d1, m1 or 0, s1 or 0, sign(a1, 'S'))
-            lon = dms(d2, m2 or 0, s2 or 0, sign(a2, 'W'))
+            lat = dms(d1, m1 or 0, s1 or 0, -1 if a1 == 'S' else 1)
+            lon = dms(d2, m2 or 0, s2 or 0, -1 if a2 == 'W' else 1)
 
             return lat, lon
 
