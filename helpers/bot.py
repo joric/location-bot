@@ -23,17 +23,28 @@ http = urllib3.PoolManager(headers={'User-Agent': 'LocationBot/1.0'})
 import re
 
 def parse_coords(q):
-    def dms(d, m=0, s=0):
-        return float(d) + float(m)/60 + float(s)/3600
+    def dms(d, m=0, s=0, sign=1):
+        return sign * (float(d) + float(m)/60 + float(s)/3600)
 
-    q = q.strip().upper().replace(',', ' ')
+    q = q.strip().upper()
 
     if '°' in q:
-        parts = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d+(?:\.\d+)?)?\s*(\d+(?:\.\d+)?)?', q)
+        parts = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*(\d*(?:\.\d+)?)?\s*([NSEW])?', q)
+
         if len(parts) >= 2:
-            lat = dms(parts[0][0], parts[0][1] or 0, parts[0][2] or 0)
-            lon = dms(parts[1][0], parts[1][1] or 0, parts[1][2] or 0)
+            d1,m1,s1,a1 = parts[0]
+            d2,m2,s2,a2 = parts[1]
+
+            def sign(a, neg):
+                if not a:
+                    return 1
+                return -1 if a in neg else 1
+
+            lat = dms(d1, m1 or 0, s1 or 0, sign(a1, 'S'))
+            lon = dms(d2, m2 or 0, s2 or 0, sign(a2, 'W'))
+
             return lat, lon
+
         return None
 
     m = re.fullmatch(r'\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*', q)
