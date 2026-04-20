@@ -23,18 +23,22 @@ http = urllib3.PoolManager(headers={'User-Agent': 'LocationBot/1.0'})
 import re
 
 def parse_coords(q):
-    def dms_to_deg(d, m=0, s=0, sign=1):
-        return sign * (float(d) + float(m)/60 + float(s)/3600)
+    def dms(d, m=0, s=0):
+        return float(d) + float(m)/60 + float(s)/3600
 
     q = q.strip().upper().replace(',', ' ')
+
+    if '°' in q:
+        parts = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d+(?:\.\d+)?)?\s*(\d+(?:\.\d+)?)?', q)
+        if len(parts) >= 2:
+            lat = dms(parts[0][0], parts[0][1] or 0, parts[0][2] or 0)
+            lon = dms(parts[1][0], parts[1][1] or 0, parts[1][2] or 0)
+            return lat, lon
+        return None
+
     m = re.fullmatch(r'\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*', q)
     if m:
         return float(m.group(1)), float(m.group(2))
-
-    m = re.search(r'(\d+(?:\.\d+)?)\D*(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([NS])?.*?(\d+(?:\.\d+)?)\D*(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([EW])?', q)
-    if m:
-        d1,m1,s1,ns,d2,m2,s2,ew = m.groups()
-        return dms_to_deg(d1,m1 or 0,s1 or 0,-1 if ns=='S' else 1), dms_to_deg(d2,m2 or 0,s2 or 0,-1 if ew=='W' else 1)
 
     return None
 
