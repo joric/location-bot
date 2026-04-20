@@ -15,16 +15,16 @@ Example: "40.714627 -74.002863" or "new york".
 """
     )
 
-http = urllib3.PoolManager()
+http = urllib3.PoolManager(headers={'User-Agent': 'LocationBot/1.0'})
 
 def getDisplayNameFromOSM(lat, lng):
-    r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"})
+    r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"}, timeout=10)
     data = json.loads(r.data.decode('utf-8'))
     if 'name' in data and 'display_name' in data:
         return data['name'], data['display_name']
 
 def getLocationFromOSM(q):
-    r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1})
+    r = http.request('GET', 'https://nominatim.openstreetmap.org/search', fields={"q":q, "format":"json", "limit": 1}, timeout=10)
     data = json.loads(r.data.decode('utf-8'))
     if data:
         return [data[0]['name'], data[0]['display_name'], *map(float, [data[0]['lat'], data[0]['lon']])]
