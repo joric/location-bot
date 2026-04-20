@@ -26,25 +26,29 @@ def parse_coords(q):
     def dms(d, m=0, s=0, sign=1):
         return sign * (float(d) + float(m)/60 + float(s)/3600)
 
+    def fmt(x):
+        s = f"{x:.6f}".rstrip('0').rstrip('.')
+        return s if s else '0'
+
     q = q.strip().upper()
 
     if '°' in q:
         coords = re.findall(r'(\d+(?:\.\d+)?)\s*°\s*(\d*(?:\.\d+)?)?\s*\'?\s*(\d*(?:\.\d+)?)?\s*"?\s*([NSEW])?', q)
 
         if len(coords) >= 2:
-            d1,m1,s1,a1 = coords[0]
-            d2,m2,s2,a2 = coords[1]
+            d1, m1, s1, a1 = coords[0]
+            d2, m2, s2, a2 = coords[1]
 
             lat = dms(d1, m1 or 0, s1 or 0, -1 if a1 == 'S' else 1)
             lon = dms(d2, m2 or 0, s2 or 0, -1 if a2 == 'W' else 1)
 
-            return lat, lon
+            return float(fmt(lat)), float(fmt(lon))
 
         return None
 
     m = re.fullmatch(r'\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*', q)
     if m:
-        return float(m.group(1)), float(m.group(2))
+        return float(fmt(float(m.group(1)))), float(fmt(float(m.group(2))))
 
     return None
 
