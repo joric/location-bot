@@ -25,17 +25,18 @@ import re
 def parse_coords(q):
     def dms_to_deg(d, m=0, s=0, sign=1):
         return sign * (float(d) + float(m)/60 + float(s)/3600)
-    q = q.replace(',', ' ').upper()
-    pattern = r'(\d+(?:\.\d+)?)\D+(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([NS])?.*?(\d+(?:\.\d+)?)\D+(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([EW])?'
-    m = re.search(pattern, q)
+
+    q = q.strip().upper().replace(',', ' ')
+    m = re.fullmatch(r'\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*', q)
+    if m:
+        return float(m.group(1)), float(m.group(2))
+
+    m = re.search(r'(\d+(?:\.\d+)?)\D*(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([NS])?.*?(\d+(?:\.\d+)?)\D*(\d*(?:\.\d+)?)?\D*(\d*(?:\.\d+)?)?\D*([EW])?', q)
     if m:
         d1,m1,s1,ns,d2,m2,s2,ew = m.groups()
-        lat = dms_to_deg(d1, m1 or 0, s1 or 0, -1 if ns=='S' else 1)
-        lng = dms_to_deg(d2, m2 or 0, s2 or 0, -1 if ew=='W' else 1)
-        return lat, lng
-    parts = [x for x in q.split() if re.match(r'^-?\d+(\.\d+)?$', x)]
-    if len(parts) == 2:
-        return float(parts[0]), float(parts[1])
+        return dms_to_deg(d1,m1 or 0,s1 or 0,-1 if ns=='S' else 1), dms_to_deg(d2,m2 or 0,s2 or 0,-1 if ew=='W' else 1)
+
+    return None
 
 def getDisplayNameFromOSM(lat, lng):
     r = http.request('GET', 'https://nominatim.openstreetmap.org/reverse', fields={"lat":lat, "lon":lng, "format":"json"}, timeout=10)
