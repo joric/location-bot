@@ -1,5 +1,7 @@
 flask==2.2.2
-python-telegram-bot>=20.0
+python-telegram-bot==13.4
 Werkzeug==2.3.7
 urllib3==1.26.18
 requests==2.31.0
+APScheduler==3.9.1
+setuptools==65.5.0
