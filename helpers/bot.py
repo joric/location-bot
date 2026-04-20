@@ -1,5 +1,8 @@
 import logging
 
+import os
+os.environ["PYTHON_TELEGRAM_BOT_NO_EXTENSIONS"] = "1"
+
 import telegram, os
 from telegram.ext import Dispatcher, MessageHandler, CommandHandler, Filters
 
